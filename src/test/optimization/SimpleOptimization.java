@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.klarshift.ga.Chromosome;
-import com.klarshift.ga.ChromosomePair;
-import com.klarshift.ga.GA;
-import com.klarshift.ga.IFitnessFunction;
-import com.klarshift.ga.IGenomeFactory;
-import com.klarshift.ga.IStopCriterion;
-import com.klarshift.ga.crossover.ICrossover;
-import com.klarshift.ga.genome.ValueChromosomeDouble;
-import com.klarshift.ga.mutation.IMutation;
+import com.klarshift.artificial.IChromosomeFactory;
+import com.klarshift.artificial.IFitnessFunction;
+import com.klarshift.artificial.IStopCriteria;
+import com.klarshift.artificial.genetic.Chromosome;
+import com.klarshift.artificial.genetic.ChromosomePair;
+import com.klarshift.artificial.genetic.DoubleChromosome;
+import com.klarshift.artificial.genetic.GA;
+import com.klarshift.artificial.genetic.crossover.ICrossover;
+import com.klarshift.artificial.genetic.mutation.IMutation;
 
-public class SimpleOptimization implements IGenomeFactory, ICrossover, IStopCriterion, IFitnessFunction, IMutation {
+public class SimpleOptimization implements IChromosomeFactory, ICrossover, IStopCriteria, IFitnessFunction, IMutation {
 	GA ga = new GA();
 	
 	public SimpleOptimization() {
-		ga.setGenomeFactory(this);
+		ga.setChromosomeFactory(this);
 		ga.setFitnessFunction(this);
 		ga.setMutator(this);
 		ga.setStopCriterion(this);	
@@ -43,7 +43,7 @@ public class SimpleOptimization implements IGenomeFactory, ICrossover, IStopCrit
 	@Override
 	public void mutate(Chromosome genome, double stdDev) {
 		Random r = new Random();
-		ValueChromosomeDouble g = (ValueChromosomeDouble) genome;
+		DoubleChromosome g = (DoubleChromosome) genome;
 		
 		int i = r.nextInt(1);
 		double v = g.get(i);
@@ -60,7 +60,7 @@ public class SimpleOptimization implements IGenomeFactory, ICrossover, IStopCrit
 
 	@Override
 	public double fitness(Chromosome genome) {
-		ValueChromosomeDouble g = ((ValueChromosomeDouble)genome);
+		DoubleChromosome g = ((DoubleChromosome)genome);
 		double x1 = g.get(0);
 
 		
@@ -77,8 +77,8 @@ public class SimpleOptimization implements IGenomeFactory, ICrossover, IStopCrit
 	}
 
 	@Override
-	public Chromosome createGenome() {
-		return new ValueChromosomeDouble(1);
+	public Chromosome createChromosome() {
+		return new DoubleChromosome(1);
 	}
 
 }

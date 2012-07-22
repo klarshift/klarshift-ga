@@ -1,30 +1,31 @@
 package test.tsp.solution.ga;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import test.tsp.solution.TSPSolution;
 
-import com.klarshift.ga.Chromosome;
-import com.klarshift.ga.GA;
-import com.klarshift.ga.IFitnessFunction;
-import com.klarshift.ga.IGenerationListener;
-import com.klarshift.ga.IGenomeFactory;
-import com.klarshift.ga.IStopCriterion;
-import com.klarshift.ga.Problem;
-import com.klarshift.ga.crossover.CrossoverList;
-import com.klarshift.ga.crossover.tsp.OrderBasedCrossover;
-import com.klarshift.ga.genome.IndexChromosome;
-import com.klarshift.ga.gui.SolutionPanel;
-import com.klarshift.ga.mutation.MutationList;
-import com.klarshift.ga.mutation.tsp.Displacement;
-import com.klarshift.ga.mutation.tsp.Insertion;
-import com.klarshift.ga.mutation.tsp.Inversion;
-import com.klarshift.ga.mutation.tsp.ReciprocalExchange;
-import com.klarshift.ga.selection.TournamentSelection;
-import com.klarshift.ga.tsp.TSPProblem;
-import com.klarshift.ga.tsp.gui.TSPProblemPanel;
+import com.klarshift.artificial.IChromosomeFactory;
+import com.klarshift.artificial.IFitnessFunction;
+import com.klarshift.artificial.IGenerationListener;
+import com.klarshift.artificial.IStopCriteria;
+import com.klarshift.artificial.Problem;
+import com.klarshift.artificial.genetic.Chromosome;
+import com.klarshift.artificial.genetic.GA;
+import com.klarshift.artificial.genetic.crossover.CrossoverList;
+import com.klarshift.artificial.genetic.mutation.MutationList;
+import com.klarshift.artificial.genetic.selection.TournamentSelection;
+import com.klarshift.artificial.gui.SolutionPanel;
+import com.klarshift.artificial.problem.tsp.TSPChromosome;
+import com.klarshift.artificial.problem.tsp.TSPFitness;
+import com.klarshift.artificial.problem.tsp.TSPProblem;
+import com.klarshift.artificial.problem.tsp.crossover.TSPXOrderBased;
+import com.klarshift.artificial.problem.tsp.gui.TSPProblemPanel;
+import com.klarshift.artificial.problem.tsp.mutation.Displacement;
+import com.klarshift.artificial.problem.tsp.mutation.Insertion;
+import com.klarshift.artificial.problem.tsp.mutation.Inversion;
+import com.klarshift.artificial.problem.tsp.mutation.ReciprocalExchange;
+import com.klarshift.artificial.problem.tsp.mutation.SimpleInversion;
 
 /**
  * Genetic Algorithm TSP Solution
@@ -34,8 +35,7 @@ import com.klarshift.ga.tsp.gui.TSPProblemPanel;
  * @author timo
  * 
  */
-public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopCriterion,
-		IFitnessFunction, IGenerationListener {
+public class TSPSolutionGA extends TSPSolution implements IGenerationListener {
 		
 	/* crossover and mutation lists */
 	private CrossoverList xList = new CrossoverList();
@@ -43,15 +43,13 @@ public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopC
 
 	/* distance */
 	private double minD;
-	private Double minStopDistance = new Double(5);
 
 	private GA ga;
-	
-	Integer maxGenerations = 100;
 
 	
 	// the problem
 	private TSPProblem problem = null;
+	private int deltaC = 0;
 	
 	@Override
 	public SolutionPanel getPanel() {
@@ -66,20 +64,14 @@ public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopC
 		return minD;
 	}
 	
-	public void setMinStopDistance(Double distance){
-		this.minStopDistance = distance;
-	}
 	
-	public Double getMinStopDistance(){
-		return minStopDistance;
-	}
 	
 	public void setMaxGenerations(Integer maxGenerations){
-		this.maxGenerations = maxGenerations;
+		setMaxIterations(maxGenerations);
 	}
 	
 	public Integer getMaxGenerations(){
-		return maxGenerations;
+		return getMaxIterations();
 	}
 
 	@Override
@@ -92,8 +84,8 @@ public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopC
 
 		// store problem
 		this.problem = (TSPProblem) problem;
-		minD = Double.MAX_VALUE;
 		
+		ga.setFitnessFunction(new TSPFitness(this.problem));
 		
 	}
 	
@@ -110,85 +102,63 @@ public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopC
 	
 	private void createGA(){
 		ga = new GA();
-		ga.setGenomeFactory(this);
-		ga.setFitnessFunction(this);
+		ga.setChromosomeFactory(this);		
 		ga.setMutator(mList);
 		ga.setStopCriterion(this);
-		ga.setMutationRate(0.05f);
+		ga.setPopulationSize(300);
+		ga.setMutationRate(0.65f);
 		ga.setCrossoverRate(0.85f);
 		ga.addGenerationListener(this);
-		ga.setSelection(new TournamentSelection(0.2));
+		ga.setSelection(new TournamentSelection(0.1));
 		ga.setCrossover(xList);
-		ga.setElitism(true);
+		ga.setElitismRate(0.05f);
 
 		// crossover
 		// xList.add(new PositionBasedCrossover());
-		xList.add(new OrderBasedCrossover());
+		xList.add(new TSPXOrderBased());
 
 		// mutations
-		//mList.add(new SimpleInversion());
-		mList.add(new ReciprocalExchange());
-		mList.add(new Insertion());
-		mList.add(new Displacement());
-		mList.add(new Inversion());
-	}
-
-	
-
-	@Override
-	public double fitness(Chromosome genome) {
-		double maxD = getDistance((IndexChromosome) genome);
-
-		// make distance a fitness function
-		return 1 / maxD;
+		mList.add("Simple Inversion", new SimpleInversion(), 10);
+		mList.add("Reciprocal Exchange", new ReciprocalExchange(), 10);
+		mList.add("Insertion", new Insertion(), 10);
+		mList.add("Displacement", new Displacement(), 10);
+		mList.add("Inversion", new Inversion(), 10);
 	}
 	
-	private double getDistance(IndexChromosome c){
+	private double getDistance(TSPChromosome c){
 		return problem.getTotalDistance(c.getChromosomes());
 	}
-
-	@Override
-	public boolean shouldStop() {
-		return ga.getGeneration() >= maxGenerations || minD <= minStopDistance
-				|| ga.getStdDeviation() < 0.1;
-	}
-
-	@Override
-	public Chromosome createGenome() {
-		int cc = problem.getCityCount();
-		IndexChromosome g = new IndexChromosome(cc);
-
-		// assign random order of cities
-		ArrayList<Integer> available = new ArrayList<Integer>();
-		for (int i = 0; i < cc; i++) {
-			available.add(i);
-		}
-
-		Collections.shuffle(available);
-		for (int i = 0; i < cc; i++) {
-			g.set(i, available.get(i));
-		}
-
-		return g;
-	}
+	
 
 	@Override
 	public void onGenerationFinished() {
-		double d = getDistance((IndexChromosome) ga.getBestGenome());
+		double d = getDistance((TSPChromosome) ga.getBestGenome());
 		if (d < minD) {
 			minD = d;
-		}
-		
-		TSPProblemPanel panel = (TSPProblemPanel) problem.getPanel();				
-		
-		// set current solution to problem
-		IndexChromosome c = ((IndexChromosome)ga.getBestGenome());			
-		problem.setCurrentSolution(c.getChromosomes());
-		panel.update();
+			deltaC  = 0;
+			
+			// set current solution to problem
+			TSPProblemPanel panel = (TSPProblemPanel) problem.getPanel();				
+			TSPChromosome c = ((TSPChromosome)ga.getBestGenome());			
+			problem.setCurrentSolution(c.getChromosomes());
+			panel.update();
+		}else{
+			/*
+			deltaC++;
+			if(deltaC > 500){
+				stopSolving();
+			}*/
+		}		
 	}
 
 	@Override
 	public void solve() {
+		super.solve();
+		
+		// init
+		minD = Double.MAX_VALUE;
+		
+		// run
 		ga.start();
 	}
 	
@@ -199,5 +169,14 @@ public class TSPSolutionGA extends TSPSolution implements IGenomeFactory, IStopC
 
 	public GA getGA() {
 		return ga;
+	}
+
+	public MutationList getMutationList() {
+		return mList;
+	}
+
+	@Override
+	public int getIterationCount() {
+		return ga.getGeneration() ;
 	}
 }

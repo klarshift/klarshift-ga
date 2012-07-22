@@ -2,17 +2,19 @@ package test.tsp.solution.ga;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
-import com.klarshift.ga.GA;
-import com.klarshift.ga.IGenerationListener;
-import com.klarshift.ga.gui.GAInfoPanel;
-import com.klarshift.ga.gui.GASettingsPanel;
-import com.klarshift.ga.gui.SolutionPanel;
-import com.klarshift.ga.tsp.TSPProblem;
+import com.klarshift.artificial.IGenerationListener;
+import com.klarshift.artificial.genetic.GA;
+import com.klarshift.artificial.genetic.gui.GAInfoPanel;
+import com.klarshift.artificial.genetic.gui.GASettingsPanel;
+import com.klarshift.artificial.gui.MutationPanel;
+import com.klarshift.artificial.gui.SolutionPanel;
+import com.klarshift.artificial.problem.tsp.TSPProblem;
 
 /**
  * tsp solution panel 
@@ -23,8 +25,7 @@ import com.klarshift.ga.tsp.TSPProblem;
 public class TSPSolutionGAPanel extends SolutionPanel implements IGenerationListener{
 	private TSPSolutionGA solution ;
 	private GA ga;
-	private GASettingsPanel gaPanel;
-	private TSPSolutionGAStopPanel stopPanel;
+	private TSPSolutionGASettingsPanel gaPanel;
 	private GAInfoPanel infoPanel;
 	
 
@@ -51,15 +52,13 @@ public class TSPSolutionGAPanel extends SolutionPanel implements IGenerationList
 		JTabbedPane settings = new JTabbedPane();
 		add(settings, BorderLayout.CENTER);
 		
-		// add ga panel
-		gaPanel = new GASettingsPanel(ga);
-		settings.add("Genetic Algorithm", gaPanel);
 		
 		// 
-		stopPanel = new TSPSolutionGAStopPanel(solution);
-		settings.add("Settings", stopPanel);
+		gaPanel = new TSPSolutionGASettingsPanel(ga, solution);
+		settings.add("Genetic Algorithm", gaPanel);
 		
-		settings.add("Mutation", new JPanel());
+		
+		settings.add("Mutation", new MutationPanel(solution.getMutationList()));
 		settings.add("Crossover", new JPanel());
 	}
 
