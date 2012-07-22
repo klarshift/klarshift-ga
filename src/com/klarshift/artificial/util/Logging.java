@@ -1,24 +1,28 @@
 package com.klarshift.artificial.util;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.PropertyConfigurator;
 
 public class Logging {
 	public static void setup(){		
 		try {
-			Logger logger = Logger.getRootLogger();
+			//PropertyConfigurator.configure("log4j.properties");
+			
+			Logger.getRootLogger().removeAllAppenders();
+			BasicConfigurator.configure();
+
+			/*Logger logger = Logger.getRootLogger();
 			
 		
-			String pattern = "%d{ISO8601} | %C | %m %n";
+			String pattern = "%p | %d{ISO8601} | %C | %m %n";
 			
 			
 			ConsoleAppender appender = new ConsoleAppender(new PatternLayout(pattern));
 			//BasicConfigurator.configure(appender);
 			
+			logger.removeAllAppenders();
 			logger.addAppender(appender);
 			
 			/*FileAppender fileAppender = new FileAppender(layout,
@@ -26,8 +30,8 @@ public class Logging {
 			
 			logger.addAppender(fileAppender);*/
 			// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-			logger.setLevel(Level.WARN);
-			logger.info("SETUP");
+			//logger.setLevel(Level.WARN);
+			//logger.info("SETUP");*/
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}

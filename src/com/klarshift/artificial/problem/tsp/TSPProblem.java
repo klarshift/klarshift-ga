@@ -125,7 +125,7 @@ public class TSPProblem extends Problem {
 	
 	public void setFile(File file){
 		if(file != null){
-			log("Set file " + file);
+			log.info("Set file: " + file);			
 			clear();
 			this.file = file;	
 			init();
@@ -133,6 +133,7 @@ public class TSPProblem extends Problem {
 	}
 	
 	private void loadDistanceMatrix(File file) throws IOException{
+		log.info("Reading distance matrix from " + file);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		String line = null;
 		int lo = 0;
@@ -157,7 +158,6 @@ public class TSPProblem extends Problem {
 			lo++;
 		}
 		reader.close();
-		log("Read Matrix");
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class TSPProblem extends Problem {
 
 	public void addCity(TSPCity tspCity) {
 		cities.add(tspCity);
-		System.out.println("ADDED CITY " + tspCity);
+		log.info("Added city " + tspCity);		
 	}
 
 	public ArrayList<TSPCity> getCities() {

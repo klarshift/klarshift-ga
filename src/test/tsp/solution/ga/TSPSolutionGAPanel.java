@@ -59,7 +59,7 @@ public class TSPSolutionGAPanel extends SolutionPanel implements IGenerationList
 		
 		
 		settings.add("Mutation", new MutationPanel(solution.getMutationList()));
-		settings.add("Crossover", new JPanel());
+		//settings.add("Crossover", new JPanel());
 	}
 
 

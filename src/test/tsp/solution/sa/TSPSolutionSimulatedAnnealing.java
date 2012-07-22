@@ -18,7 +18,7 @@ public class TSPSolutionSimulatedAnnealing extends TSPSolution {
 	private boolean running = false;
 	private TSPProblem problem;
 	private ArrayList<Integer> currentOrder;
-	private Double dampFactor = 0.999;
+	private Double coolingRate = 0.999;
 	private int iteration = 0;
 	private double minDistance = 0;
 	private Random random = new Random();
@@ -42,7 +42,7 @@ public class TSPSolutionSimulatedAnnealing extends TSPSolution {
 			
 			panel.add(new DoubleSliderController(this, "temperature", 50, 5000));
 			panel.add(new IntSliderController(this, "keepFactor", 0, 100));
-			panel.add(new DoubleSliderController(this, "dampFactor", 0.9, 0.99999));
+			panel.add(new DoubleSliderController(this, "coolingRate", 0.9, 0.99999));
 		}
 		return panel;
 	}
@@ -61,12 +61,12 @@ public class TSPSolutionSimulatedAnnealing extends TSPSolution {
 		this.problem = (TSPProblem) problem;
 	}
 	
-	public void setDampFactor(Double damp){
-		this.dampFactor = damp;
+	public void setCoolingRate(Double damp){
+		this.coolingRate = damp;
 	}
 	
-	public Double getDampFactor(){
-		return dampFactor;
+	public Double getCoolingRate(){
+		return coolingRate;
 	}
 	
 	
@@ -108,7 +108,7 @@ public class TSPSolutionSimulatedAnnealing extends TSPSolution {
 			}
 			
 			if(tf++ > keepFactor){
-				temp *= dampFactor;
+				temp *= coolingRate;
 				tf = 0;
 			}
 			

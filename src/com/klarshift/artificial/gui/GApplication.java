@@ -11,8 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.klarshift.artificial.Solution;
 import com.klarshift.artificial.Problem;
+import com.klarshift.artificial.Solution;
 
 /**
  * genetic algorithm main application
@@ -220,6 +220,8 @@ public class GApplication extends JFrame implements ActionListener {
 		setVisible(true);
 		
 		statusBar.setStatus("Application loaded.");
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private JButton createButton(String text){

@@ -1,16 +1,9 @@
 package test.tsp.solution.ga;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import test.tsp.solution.TSPSolution;
 
-import com.klarshift.artificial.IChromosomeFactory;
-import com.klarshift.artificial.IFitnessFunction;
 import com.klarshift.artificial.IGenerationListener;
-import com.klarshift.artificial.IStopCriteria;
 import com.klarshift.artificial.Problem;
-import com.klarshift.artificial.genetic.Chromosome;
 import com.klarshift.artificial.genetic.GA;
 import com.klarshift.artificial.genetic.crossover.CrossoverList;
 import com.klarshift.artificial.genetic.mutation.MutationList;
@@ -96,21 +89,25 @@ public class TSPSolutionGA extends TSPSolution implements IGenerationListener {
 	
 
 	public TSPSolutionGA() {
-		createGA();
-		
+		createGA();		
+	}
+	
+	protected void configureGA(GA ga, MutationList mList, CrossoverList cList){
+		// configure
 	}
 	
 	private void createGA(){
 		ga = new GA();
 		ga.setChromosomeFactory(this);		
 		ga.setMutator(mList);
+		ga.setCrossover(xList);
 		ga.setStopCriterion(this);
-		ga.setPopulationSize(300);
-		ga.setMutationRate(0.65f);
-		ga.setCrossoverRate(0.85f);
 		ga.addGenerationListener(this);
 		ga.setSelection(new TournamentSelection(0.1));
-		ga.setCrossover(xList);
+		
+		ga.setPopulationSize(200);
+		ga.setMutationRate(0.85f);
+		ga.setCrossoverRate(0.45f);				
 		ga.setElitismRate(0.05f);
 
 		// crossover
@@ -123,6 +120,8 @@ public class TSPSolutionGA extends TSPSolution implements IGenerationListener {
 		mList.add("Insertion", new Insertion(), 10);
 		mList.add("Displacement", new Displacement(), 10);
 		mList.add("Inversion", new Inversion(), 10);
+		
+		configureGA(ga, mList, xList);
 	}
 	
 	private double getDistance(TSPChromosome c){
@@ -142,13 +141,7 @@ public class TSPSolutionGA extends TSPSolution implements IGenerationListener {
 			TSPChromosome c = ((TSPChromosome)ga.getBestGenome());			
 			problem.setCurrentSolution(c.getChromosomes());
 			panel.update();
-		}else{
-			/*
-			deltaC++;
-			if(deltaC > 500){
-				stopSolving();
-			}*/
-		}		
+		}	
 	}
 
 	@Override

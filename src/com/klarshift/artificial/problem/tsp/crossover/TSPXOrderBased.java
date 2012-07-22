@@ -33,8 +33,6 @@ public class TSPXOrderBased implements ICrossover {
 		// position based crossover
 		ChromosomePair clonedPair = pair.clone();
 		
-		//System.out.println(clonedPair);
-		
 		TSPChromosome first = (TSPChromosome) clonedPair.getFirst();
 		TSPChromosome second = (TSPChromosome) clonedPair.getSecond();
 		
@@ -101,25 +99,14 @@ public class TSPXOrderBased implements ICrossover {
 				j++;
 			}
 		}
-		
-	
-		
-		
-		
-		
-		
+
 		first.setChromosomes(off1);
 		second.setChromosomes(off2);
-		
-		
-
+			
 		list.add(first);
 		list.add(second);
 		
 		return list;
 	}
-
-	
-	
 
 }

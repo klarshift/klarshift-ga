@@ -7,6 +7,8 @@ import com.klarshift.artificial.Problem;
 import com.klarshift.artificial.es.ES;
 import com.klarshift.artificial.genetic.mutation.MutationList;
 import com.klarshift.artificial.gui.SolutionPanel;
+import com.klarshift.artificial.gui.controller.DoubleSliderController;
+import com.klarshift.artificial.gui.controller.IntSliderController;
 import com.klarshift.artificial.problem.tsp.TSPChromosome;
 import com.klarshift.artificial.problem.tsp.TSPFitness;
 import com.klarshift.artificial.problem.tsp.TSPProblem;
@@ -27,8 +29,12 @@ public class TSPSolutionES extends TSPSolution {
 	private TSPProblem problem;
 	private MutationList mList = new MutationList();
 	private double minD = Double.MAX_VALUE;
+	private SolutionPanel panel;
 	
 	double std = 1;
+	private Double devReduction = 0.9;
+	
+	
 
 	public TSPSolutionES() {
 		es = new TSPES();
@@ -70,8 +76,13 @@ public class TSPSolutionES extends TSPSolution {
 
 	@Override
 	public SolutionPanel getPanel() {
-		// TODO Auto-generated method stub
-		return null;
+		if(panel == null){
+			panel = new SolutionPanel(this);
+			panel.setTitle("Solution: Evolutionary Strategy");
+			
+			panel.add(new DoubleSliderController(this, "deviationReduction", 0.9, 0.99999));
+		}
+		return panel;
 	}
 
 	public String toString() {
@@ -132,7 +143,10 @@ public class TSPSolutionES extends TSPSolution {
 				problem.getPanel().update();	
 			}
 			
-			std *= 0.999;
+			std *= devReduction;
+			if(std < 0.0001){
+				stopSolving();
+			}
 			
 		}
 
@@ -142,6 +156,14 @@ public class TSPSolutionES extends TSPSolution {
 	@Override
 	public int getIterationCount() {
 		return es.getGeneration();
+	}
+
+	public void setDeviationReduction(Double coolingRate) {
+		this.devReduction = coolingRate;
+	}
+	
+	public Double getDeviationReduction(){
+		return devReduction;
 	}
 
 }

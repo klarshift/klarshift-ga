@@ -27,7 +27,6 @@ public class BeanController {
 	
 	public void setValue(Object value){
 		try {
-			System.out.println("SET " + value.getClass());
 			delegateSet.invoke(object, value);			
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {

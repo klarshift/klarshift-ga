@@ -63,6 +63,11 @@ public class GA implements IAlgorithm {
 	public GA() {
 
 	}
+	
+	public void setModulation(IMutationModulation modulation){
+		this.modulation = modulation;
+		log.info("Set modulation: " + modulation);
+	}
 
 	
 	
